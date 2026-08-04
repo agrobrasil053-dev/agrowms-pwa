@@ -47,7 +47,13 @@
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register("sw.js").then(function (reg) {
+          // updateViaCache: "none" ignora de vez o Cache-Control que o
+          // GitHub Pages manda no sw.js (max-age=600) — sem isso, mesmo o
+          // register()/update() padrão do navegador pode achar que o
+          // sw.js "não mudou" só porque pegou uma cópia HTTP em cache
+          // (achado real, 2026-08-04, junto com o fetch(..., {cache:
+          // "no-store"}) do HTML dentro do próprio sw.js).
+          navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
             // Força checar se existe um sw.js byte-diferente publicado toda
             // vez que a página carrega — sem isso, em alguns navegadores
             // (principalmente PWA "instalado"/tela inicial), a checagem

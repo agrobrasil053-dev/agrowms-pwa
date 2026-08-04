@@ -4,7 +4,7 @@
 // O nome do cache abaixo é sobrescrito com um ID de build único pelo
 // pwa-inject.js a cada deploy — é isso que força o navegador a detectar
 // que existe uma versão nova (sw.js byte-diferente) e trocar sozinho.
-const CACHE = "agrowms-cache-msenti5c";
+const CACHE = "agrowms-cache-mseopans";
 
 self.addEventListener("install", (e) => { self.skipWaiting(); });
 self.addEventListener("activate", (e) => {
@@ -25,10 +25,15 @@ self.addEventListener("fetch", (e) => {
   const ehHTML = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
 
   if (ehHTML) {
-    // network-first: garante atualização quando há internet
+    // network-first: garante atualização quando há internet. `cache:
+    // "no-store"` é ESSENCIAL aqui — sem isso, o `fetch()` respeita o
+    // Cache-Control: max-age=600 que o GitHub Pages manda no HTML, e devolve
+    // uma cópia velha por baixo dos panos mesmo com essa lógica "network-
+    // first" (achado real, 2026-08-04: recarregar dentro dos mesmos 10min
+    // não pegava a versão nova).
     e.respondWith((async () => {
       try {
-        const res = await fetch(req);
+        const res = await fetch(req, { cache: "no-store" });
         const cache = await caches.open(CACHE);
         cache.put(req, res.clone());
         return res;
