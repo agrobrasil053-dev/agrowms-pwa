@@ -47,7 +47,28 @@
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register("sw.js").catch(function (e) { console.log("SW erro", e); });
+          navigator.serviceWorker.register("sw.js").then(function (reg) {
+            // Força checar se existe um sw.js byte-diferente publicado toda
+            // vez que a página carrega — sem isso, em alguns navegadores
+            // (principalmente PWA "instalado"/tela inicial), a checagem
+            // automática do navegador pode demorar até 24h ou nunca rodar
+            // de novo, deixando o aparelho preso pra sempre na 1ª versão
+            // que ele viu (achado real, 2026-08-04).
+            reg.update().catch(function () {});
+          }).catch(function (e) { console.log("SW erro", e); });
+
+          // Quando o novo SW assume o controle da página (activate +
+          // clients.claim() no sw.js), recarrega sozinho — sem isso o SW
+          // novo já está no comando, mas o JS que já estava rodando na
+          // aba continua sendo o antigo até um reload manual, que é
+          // exatamente o "continua igual" que o usuário via mesmo depois
+          // de recarregar.
+          var jaRecarregou = false;
+          navigator.serviceWorker.addEventListener("controllerchange", function () {
+            if (jaRecarregou) return;
+            jaRecarregou = true;
+            window.location.reload();
+          });
         });
       }
     </script>
