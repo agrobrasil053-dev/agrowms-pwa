@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no" />
+    <title>AgroWMS</title>
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+  <link rel="icon" href="/agrowms-pwa/favicon.ico" />
+    <link rel="manifest" href="manifest.json"/>
+    <meta name="theme-color" content="#0B1D13"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="AgroWMS"/>
+    <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+    <style>html,body{background:#0B1D13} @supports(padding:max(0px)){body{background:#0B1D13}}</style>
+  </head>
+
+  <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  <script src="/agrowms-pwa/_expo/static/js/web/index-407b67346e2f055ec3bcdce2123616ac.js" defer></script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          // updateViaCache: "none" ignora de vez o Cache-Control que o
+          // GitHub Pages manda no sw.js (max-age=600) — sem isso, mesmo o
+          // register()/update() padrão do navegador pode achar que o
+          // sw.js "não mudou" só porque pegou uma cópia HTTP em cache
+          // (achado real, 2026-08-04, junto com o fetch(..., {cache:
+          // "no-store"}) do HTML dentro do próprio sw.js).
+          navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
+            // Força checar se existe um sw.js byte-diferente publicado toda
+            // vez que a página carrega — sem isso, em alguns navegadores
+            // (principalmente PWA "instalado"/tela inicial), a checagem
+            // automática do navegador pode demorar até 24h ou nunca rodar
+            // de novo, deixando o aparelho preso pra sempre na 1ª versão
+            // que ele viu (achado real, 2026-08-04).
+            reg.update().catch(function () {});
+          }).catch(function (e) { console.log("SW erro", e); });
+
+          // Quando o novo SW assume o controle da página (activate +
+          // clients.claim() no sw.js), recarrega sozinho — sem isso o SW
+          // novo já está no comando, mas o JS que já estava rodando na
+          // aba continua sendo o antigo até um reload manual, que é
+          // exatamente o "continua igual" que o usuário via mesmo depois
+          // de recarregar.
+          var jaRecarregou = false;
+          navigator.serviceWorker.addEventListener("controllerchange", function () {
+            if (jaRecarregou) return;
+            jaRecarregou = true;
+            window.location.reload();
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
