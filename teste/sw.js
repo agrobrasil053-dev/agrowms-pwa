@@ -4,7 +4,7 @@
 // O nome do cache abaixo é sobrescrito com um ID de build único pelo
 // pwa-inject.js a cada deploy — é isso que força o navegador a detectar
 // que existe uma versão nova (sw.js byte-diferente) e trocar sozinho.
-const CACHE = "agrowms-cache-mt38y2fg";
+const CACHE = "agrowms-cache-mt3as5cl";
 
 self.addEventListener("install", (e) => { self.skipWaiting(); });
 self.addEventListener("activate", (e) => {
